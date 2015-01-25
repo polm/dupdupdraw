@@ -6,8 +6,18 @@ Builtins: x y t (time) */+- sqrt exp dup drop
 
 """
 
+
 is-func = -> \function == typeof it
 is-num  = -> not isNaN it
+
+write-png = (canvas) ->
+  fs = require('fs')
+  fname = 'dupdupdraw.' + (new Date!).toISOString! + '.png'
+  out = fs.createWriteStream(__dirname + '/' + fname)
+  stream = canvas.pngStream()
+
+  stream.on 'data', -> out.write it
+  stream.on 'end', -> console.log('saved png to ' + fname)
 
 class Parser
   (@x=0, @y=0, @t=0) ~>
@@ -83,10 +93,11 @@ class Parser
         #@push ~~(255 * Math.random!) # no errors, just noise
     return @s
 
-window.Parser = Parser
-canvas = document.query-selector(\canvas)
+Parser = Parser
+Canvas = require \canvas
+canvas = new Canvas 512, 512
 ctx = canvas.get-context \2d
-window.render = ->
+render = ->
   p = new Parser
   width = canvas.width
   height = canvas.height
@@ -118,24 +129,26 @@ window.render = ->
 # Prior to this there was a bug where all < > were actually just random values... arg. Changed them to @ ? for posterity.
 # 512 512 0 256 ? 16 128 0 128 0 - di ? + xl ? di y 0 xl xl di / 0 xg + 256 * / 256 - y ? sr di max - / @ @ di di
 # ? ? 256 0 16 64 16 128 128 0 di 4 % @ xl 256 * sr + 512 % - 0 di y sin @ 256 - max % % xl 6 sr sr / 256 xg + y 0
+# ? 0 128 16 256 256 yg 2 ? 256 yl @ xg sin ? @ yl + 0 - max 2 x xl % max 2 + @ 2 - yg @ y xg ? x di yl
+# 512 0 256 512 ? ? y + ? sr % yl sin x max + 256 yg - @ di xg y 2 max 256 2 ? xl xl ? 256 max yl sin
 
 nums = <[ 0 16 64 128 256 512 ? ]>
-vocab = <[ 0 2 4 6 256 512 x y + - * / % sr di max ? @ xg xl sin ]>
+vocab = <[ 0 2 256 x y + - * % sr di max ? @ xg xl yg yl sin ]>
 
 R = -> ~~(it * Math.random!)
 pick = -> it[R(it.length)]
 
 # With image, twitter takes up to 117 characters
-window.random-prog = (cap) ->
+random-prog = (cap) ->
   prog = ''
-  for ii from 0 til 10 # first seed the stack
+  for ii from 0 til 5 # first seed the stack
     prog += ' ' + pick nums
   while prog.length < cap
     prog += ' ' + pick vocab
   console.log prog
   return prog
 
-window.layers = ->
+layers = ->
   ctx.global-alpha = 1
   ctx.fill-style = '#fff'
   ctx.fill-rect 0, 0, canvas.width, canvas.height
@@ -143,7 +156,7 @@ window.layers = ->
   for ii from 0 til 5
     render random-prog!
 
-window.sectioned = ->
+sectioned = ->
   prog = ''
   for ii from 0 til 10
     prog += ' ' + pick nums
@@ -156,4 +169,5 @@ window.sectioned = ->
   console.log prog
   return prog
 
-
+render random-prog 100
+write-png canvas
