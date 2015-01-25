@@ -19,9 +19,15 @@
       this$.parse = bind$(this$, 'parse', prototype);
       this$.rgba = bind$(this$, 'rgba', prototype);
       this$.rgb = bind$(this$, 'rgb', prototype);
+      this$.sin = bind$(this$, 'sin', prototype);
+      this$.yg = bind$(this$, 'yg', prototype);
+      this$.yl = bind$(this$, 'yl', prototype);
+      this$.xg = bind$(this$, 'xg', prototype);
+      this$.xl = bind$(this$, 'xl', prototype);
+      this$.max = bind$(this$, 'max', prototype);
       this$.dist = bind$(this$, 'dist', prototype);
-      this$.lessThan = bind$(this$, 'lessThan', prototype);
-      this$.greaterThan = bind$(this$, 'greaterThan', prototype);
+      this$.less = bind$(this$, 'less', prototype);
+      this$.greater = bind$(this$, 'greater', prototype);
       this$.swap = bind$(this$, 'swap', prototype);
       this$.exp = bind$(this$, 'exp', prototype);
       this$.mod = bind$(this$, 'mod', prototype);
@@ -43,8 +49,10 @@
         "/": 'div',
         "%": 'mod',
         "^": 'exp',
-        ">": 'greater-than',
-        "<": 'greater-than'
+        ">": 'greater',
+        "<": 'less',
+        "sr": 'sqrt',
+        "di": 'dist'
       };
       return this$;
     } function ctor$(){} ctor$.prototype = prototype;
@@ -108,13 +116,13 @@
       this.push(a);
       return this.push(b);
     };
-    prototype.greaterThan = function(){
+    prototype.greater = function(){
       var a, b;
       a = this.pop();
       b = this.pop();
       return this.push(~~(b > a));
     };
-    prototype.lessThan = function(){
+    prototype.less = function(){
       var a, b;
       a = this.pop();
       b = this.pop();
@@ -125,6 +133,40 @@
       yy = this.pop();
       xx = this.pop();
       return this.push(~~Math.sqrt(Math.pow(this.x - xx, 2) + Math.pow(this.y - yy, 2)));
+    };
+    prototype.max = function(){
+      return this.push(Math.max(this.pop(), this.pop()));
+    };
+    prototype.xl = function(){
+      if (this.x < this.pop()) {
+        return 'ok';
+      } else {
+        return this.pop() && this.push(0);
+      }
+    };
+    prototype.xg = function(){
+      if (this.x > this.pop()) {
+        return 'ok';
+      } else {
+        return this.pop() && this.push(0);
+      }
+    };
+    prototype.yl = function(){
+      if (this.y < this.pop()) {
+        return 'ok';
+      } else {
+        return this.pop() && this.push(0);
+      }
+    };
+    prototype.yg = function(){
+      if (this.y > this.pop()) {
+        return 'ok';
+      } else {
+        return this.pop() && this.push(0);
+      }
+    };
+    prototype.sin = function(){
+      return this.push(~~(256 * Math.sin((this.pop() / 256) * (Math.PI / 2))));
     };
     prototype.rgb = function(){
       var b, g, r;
@@ -142,7 +184,7 @@
       return [r, g, b, a];
     };
     prototype.parse = function(code){
-      var words, i$, len$, word, results$ = [];
+      var words, i$, len$, word;
       words = code.split(' ');
       for (i$ = 0, len$ = words.length; i$ < len$; ++i$) {
         word = words[i$];
@@ -154,18 +196,18 @@
         }
         if (this[word] || this[word] === 0) {
           if (isFunc(this[word])) {
-            results$.push(this[word]());
+            this[word]();
           } else {
-            results$.push(this.push(this[word]));
+            this.push(this[word]);
           }
         } else if (isNum(word)) {
-          results$.push(this.push(+word));
+          this.push(+word);
         } else {
           this.mapping[word] = ~(255 * Math.random());
-          results$.push(this.push(this.mapping[word]));
+          this.push(this.mapping[word]);
         }
       }
-      return results$;
+      return this.s;
     };
     return Parser;
   }());
@@ -194,22 +236,22 @@
     }
     return results$;
   };
-  nums = ['0', '16', '128', '256', '512'];
-  vocab = ['16', '64', '128', '256', 'x', 'y', '<', '>', '+', '-', '%', 'sqrt', 'dist'];
+  nums = ['0', '16', '64', '128', '256', '512', '?'];
+  vocab = ['0', '2', '4', '6', '256', '512', 'x', 'y', '+', '-', '*', '/', '%', 'sr', 'di', 'max', '?', '@', 'xg', 'xl', 'sin'];
   R = function(it){
     return ~~(it * Math.random());
   };
   pick = function(it){
     return it[R(it.length)];
   };
-  window.randomProg = function(){
+  window.randomProg = function(cap){
     var prog, i$, ii;
     prog = '';
-    for (i$ = 0; i$ < 5; ++i$) {
+    for (i$ = 0; i$ < 10; ++i$) {
       ii = i$;
       prog += ' ' + pick(nums);
     }
-    while (prog.length < 112) {
+    while (prog.length < cap) {
       prog += ' ' + pick(vocab);
     }
     console.log(prog);
@@ -226,6 +268,26 @@
       results$.push(render(randomProg()));
     }
     return results$;
+  };
+  window.sectioned = function(){
+    var prog, i$, ii;
+    prog = '';
+    for (i$ = 0; i$ < 10; ++i$) {
+      ii = i$;
+      prog += ' ' + pick(nums);
+    }
+    for (i$ = 0; i$ < 10; ++i$) {
+      ii = i$;
+      prog += ' ' + pick(vocab);
+    }
+    prog += '256 x < *';
+    for (i$ = 0; i$ < 10; ++i$) {
+      ii = i$;
+      prog += ' ' + pick(vocab);
+    }
+    prog += '256 x > *';
+    console.log(prog);
+    return prog;
   };
   function bind$(obj, key, target){
     return function(){ return (target || obj)[key].apply(obj, arguments) };
