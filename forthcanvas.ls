@@ -12,7 +12,7 @@ is-num  = -> not isNaN it
 
 write-png = (canvas) ->
   fs = require('fs')
-  fname = 'dupdupdraw.' + (new Date!).toISOString! + '.png'
+  fname = 'images/dupdupdraw.' + (new Date!).toISOString! + '.png'
   out = fs.createWriteStream(__dirname + '/' + fname)
   stream = canvas.pngStream()
 
@@ -110,30 +110,8 @@ render = ->
       ctx.fill-rect xx, yy, 1, 1
       p.s = [] # reset the stack
 
-# this is cool: 
-# y x 64 / * y x 64 / * 255 - 128 mod 64 + 0
-# 128 ? * @ * 256 y - - sqrt
-# sqrt 256 dup dup sqrt swap y % + dup
-# y sqrt @ + 64 sqrt * 128 128 -
-# ? @ 64 ? y y 64 % - @
-# @ + x dist y y + % y %
-# - sqrt 256 @ 64 x + dist y 64 64 64 ? x y 256 - % ? 16
-# 16 0 16 128 0 x 256 sqrt x x x 64 dist ? + 256 128 ? - y sqrt - 128 @ dist
-# 16 0 16 128 256 % 64 128 ? 16 + ? dist x x ? 128 + y dist dist % % ? x
-# 512 256 128 256 256 - @ 256 128 128 dist 128 + x dist 256 x + dist ? 128 sqrt % 64 +
-# 16 0 256 128 0 - 128 sqrt % sqrt sqrt 128 128 128 % + dist 16 64 % x x 64 128 -
-# 256 512 16 256 0 16 dist + + + dist 64 128 64 y dist ? - 16 dist 256 dist % + 64
-# 256 256 16 0 512 - 128 256 + % x - dist % 128 x ? % ? % dist x dist - dist
-# 128 0 256 256 512 y 16 x % + x 256 x @ 64 dist - @ % 256 @ x 128 16 ? 256 ? sqrt y 256 % x 256 % y % % y y 256 dist
-# 64 64 128 512 0 64 -256 512 256 0 * 0 @ - ? 256 % x / sqrt % 0 y * ? 0 ? 0 @ % * 256 - 256 dist dist dist ? % @
-# Prior to this there was a bug where all < > were actually just random values... arg. Changed them to @ ? for posterity.
-# 512 512 0 256 ? 16 128 0 128 0 - di ? + xl ? di y 0 xl xl di / 0 xg + 256 * / 256 - y ? sr di max - / @ @ di di
-# ? ? 256 0 16 64 16 128 128 0 di 4 % @ xl 256 * sr + 512 % - 0 di y sin @ 256 - max % % xl 6 sr sr / 256 xg + y 0
-# ? 0 128 16 256 256 yg 2 ? 256 yl @ xg sin ? @ yl + 0 - max 2 x xl % max 2 + @ 2 - yg @ y xg ? x di yl
-# 512 0 256 512 ? ? y + ? sr % yl sin x max + 256 yg - @ di xg y 2 max 256 2 ? xl xl ? 256 max yl sin
-
-nums = <[ 0 16 64 128 256 512 ? ]>
-vocab = <[ 0 2 256 x y + - * % sr di max ? @ xg xl yg yl sin ]>
+nums = <[ 0 16 32 64 128 256 512 ? ]>
+vocab = <[ 0 2 256 x y + - * sr di max xg xl sin ]>
 
 R = -> ~~(it * Math.random!)
 pick = -> it[R(it.length)]
