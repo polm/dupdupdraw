@@ -87,7 +87,7 @@ class Parser
         else @push @[word] # x, y, t
       else if is-num word then @push (+word)
       else
-        @mapping[word] = ~(255 * Math.random!)
+        @mapping[word] = ~~(255 * Math.random!)
         @push @mapping[word]
         #console.log "randomed: #word"
         #@push ~~(255 * Math.random!) # no errors, just noise
@@ -111,7 +111,7 @@ render = ->
       p.s = [] # reset the stack
 
 nums = <[ 0 16 32 64 128 256 512 ? ]>
-vocab = <[ 0 2 256 x y + - * sr di max xg xl sin ]>
+vocab = <[ 0 16 64 256 512 ? @ x y + - * swap dup % sr sr di di di max xg xl yl yg sin ]>
 
 R = -> ~~(it * Math.random!)
 pick = -> it[R(it.length)]
@@ -147,5 +147,6 @@ sectioned = ->
   console.log prog
   return prog
 
-render random-prog 100
+code = process.argv.2 or random-prog 100
+render code
 write-png canvas
