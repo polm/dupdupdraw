@@ -10,10 +10,10 @@ Builtins: x y t (time) */+- sqrt exp dup drop
 is-func = -> \function == typeof it
 is-num  = -> not isNaN it
 
-write-png = (canvas) ->
+write-png = (canvas, fname) ->
   fs = require('fs')
-  fname = 'images/dupdupdraw.' + (new Date!).toISOString! + '.png'
-  out = fs.createWriteStream(__dirname + '/' + fname)
+  fname = fname or __dirname + '/images/dupdupdraw.' + (new Date!).toISOString! + '.png'
+  out = fs.createWriteStream(fname)
   stream = canvas.pngStream()
 
   stream.on 'data', -> out.write it
@@ -27,10 +27,14 @@ class Parser
       "-": \minus
       "*": \mult
       "/": \div
+      "//": \floordiv
+      "=": \equal
       "%": \mod
       "^": \exp
       ">": \greater
+      "&gt;": \greater
       "<": \less
+      "&lt;": \less
       "sr": \sqrt
       "di": \dist
     }
@@ -51,6 +55,8 @@ class Parser
   minus: ~> a = @pop!; b = @pop!; @push b - a
   mult: ~> @push (@pop! * @pop!)
   div: ~> a = @pop!; b = @pop!; @push b / a
+  floordiv: ~> a = @pop!; b = @pop!; @push ~~(b / a)
+  equal: ~> a = @pop!; b = @pop!; @push ~~(b == a)
   mod: ~> a = @pop!; b = @pop!; @push b % a
   exp: ~> a = @pop!; b = @pop!; @push Math.pow b, a
   swap: ~> a = @pop!; b = @pop!; @push a; @push b
@@ -58,16 +64,24 @@ class Parser
   less: ~> a = @pop!; b = @pop!; @push ~~(b < a)
   dist: ~> yy = @pop!; xx = @pop!; @push ~~Math.sqrt( ((@x - xx)^2) + ((@y - yy)^2))
   max: ~> @push Math.max(@pop!, @pop!)
-  xl: ~> if @x < @pop! then \ok else @pop! and @push 0 # zero if not less than x
-  xg: ~> if @x > @pop! then \ok else @pop! and @push 0
-  yl: ~> if @y < @pop! then \ok else @pop! and @push 0
-  yg: ~> if @y > @pop! then \ok else @pop! and @push 0
+  #xl: ~> if @x < @pop! then \ok else (@pop! and @push 0) # zero if not less than x
+  #xg: ~> if @x > @pop! then \ok else (@pop! and @push 0)
+  #yl: ~> if @y < @pop! then \ok else (@pop! and @push 0)
+  #yg: ~> if @y > @pop! then \ok else (@pop! and @push 0)
+  xl: ~> if @x < @pop! then \ok else (@pop!; @push 0) # zero if not less than x
+  xg: ~> if @x > @pop! then \ok else (@pop!; @push 0)
+  yl: ~> if @y < @pop! then \ok else (@pop!; @push 0)
+  yg: ~> if @y > @pop! then \ok else (@pop!; @push 0)
   sin: ~> @push ~~(256 * (Math.sin (@pop! / 256) * (Math.PI / 2)))
+  sinh: ~> a = @pop!; @push ( (Math.pow(Math.E, a) - Math.pow(Math.E, -a)) / 2)
+  ish: ~> a = @pop! / 256; @push (64 / ( (Math.pow(Math.E, a) - Math.pow(Math.E, -a)) / 2))
+  r: ~> @push ~~(255 * Math.random!)
+  e: ~> @push Math.E
 
   rgb: ~>
-    b = @pop! or 0
-    g = @pop! or 0
-    r = @pop! or 0
+    b = ~~@pop! or 0
+    g = ~~@pop! or 0
+    r = ~~@pop! or 0
     return [r, g, b]
 
   rgba: ~>
@@ -89,7 +103,7 @@ class Parser
       else
         @mapping[word] = ~~(255 * Math.random!)
         @push @mapping[word]
-        #console.log "randomed: #word"
+        ##console.log "randomed: #word"
         #@push ~~(255 * Math.random!) # no errors, just noise
     return @s
 
@@ -147,6 +161,8 @@ sectioned = ->
   console.log prog
   return prog
 
-code = process.argv.2 or random-prog 100
+if process.argv.2 and process.argv.2.length > 0
+    code = process.argv.2
+else code = random-prog 100
 render code
-write-png canvas
+write-png canvas, process.argv.3
