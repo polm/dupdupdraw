@@ -32,16 +32,20 @@ Some built in keywords change what they do depending on your pixel's location; t
 A word in parens is an alias. ? and @ are not keywords, but are often used as random values.
 
 - +-/* - basic math
-- mod (%) - modulus "7 4 %" -> [3]
+- = - equality test - if the top two values are equal, then push 1 onto the stack, otherwise push 0
+- mod (%) - modulus "7 4 %" -> [3]. A
+- // - As division, but take the floor (round down). 
 - sqrt (sr) - square root
 - sin - sin of the value multiplied by 255
 - r - random and re-evaluated for every pixel (adds noise)
-- dist (di) - the distance of the current pixel from the location denoted by the top of the stack
-- < > - "10 7 <" -> [0], "7 10 <" -> [1]
-- xl / xg / yl / yg - If the top of the stack is less than x (for xl), leave the next value alone, otherwise replace with zero. xg -> x greater, yg -> y greater etc.
+- dist (di) - the distance of the current pixel from the location denoted by the two values on the top of the stack ("10 20 di" gives distance from x: 10, y: 20).
+- < > - "10 7 <" -> [0], "7 10 <" -> [1]. There's no `if` in dupdupdraw, but this can be used in much the same way ("x dup 256 < *" is zero where x is not less than 256, for example.)
+- xl / xg / yl / yg - If the top of the stack is less than x (for xl), leave the next value alone, otherwise replace with zero. xg -> x greater, yg -> y greater etc. This is good for sectioning your canvas.
 - dup - duplicate the top of the stack ("23 dup" -> [23 23])
 - swap - swap the top of the stack with the next value "1 2 swap" -> [2 1]
+- ish - inverse sinh, 64 / sinh(input / 256). Good for curves. Thanks to @itszutak for introducing me to sinh. (sinh is also available but it's a very steep curve)
+- max - remove the two values from the top of the stack and put the higher one back. 
 
-This was written in a hurry, if there's anything you'd like to know just ask at @polm23. Thanks!
+If you have any questions, feel free to ask me on Twitter. Thanks!
 
 -POLM
