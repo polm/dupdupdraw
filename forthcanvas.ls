@@ -108,7 +108,7 @@ class Parser
     return @s
 
 Parser = Parser
-Canvas = require \canvas
+Canvas = require \canvas-browserify
 canvas = new Canvas 512, 512
 ctx = canvas.get-context \2d
 render = ->
@@ -162,7 +162,11 @@ sectioned = ->
   return prog
 
 if process.argv.2 and process.argv.2.length > 0
-    code = process.argv.2
+  code = process.argv.2
 else code = random-prog 100
 render code
-write-png canvas, process.argv.3
+if process.title !== 'browser'
+  write-png canvas, process.argv.3
+else
+  set-timeout ->
+    document.body.append-child canvas
