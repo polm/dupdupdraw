@@ -145,14 +145,17 @@ stack-length = (prog) ->
 # With image, twitter takes up to 117 characters
 random-prog = (cap) ->
   prog = [pick nums]
-  while prog.join(' ').length < cap
+  while prog.join(' ').length <= cap
     if stack-length(prog) < 1
-      prog.push pick pushes
+      prog.pop()
+      prog.push pick pushes.concat neuts
     else
       prog.push pick vocab
+  prog.pop()
   while stack-length(prog) < 3
-    prog.pop
-    prog.unshift pick pushes
+    cand = prog.pop()
+    prog.splice R(prog.length), 0, pick pushes.filter (x) ->
+      return x.length <= cand.length
   console.log prog
   return prog.join ' '
 

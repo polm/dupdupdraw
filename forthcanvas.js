@@ -315,21 +315,26 @@
     }, 0);
   };
   randomProg = function(cap){
-    var prog;
+    var prog, cand;
     prog = [pick(nums)];
-    while (prog.join(' ').length < cap) {
+    while (prog.join(' ').length <= cap) {
       if (stackLength(prog) < 1) {
-        prog.push(pick(pushes));
+        prog.pop();
+        prog.push(pick(pushes.concat(neuts)));
       } else {
         prog.push(pick(vocab));
       }
     }
+    prog.pop();
     while (stackLength(prog) < 3) {
-      prog.pop;
-      prog.unshift(pick(pushes));
+      cand = prog.pop();
+      prog.splice(R(prog.length), 0, pick(pushes.filter(fn$)));
     }
     console.log(prog);
     return prog.join(' ');
+    function fn$(x){
+      return x.length <= cand.length;
+    }
   };
   layers = function(){
     var i$, ii, results$ = [];
