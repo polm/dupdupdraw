@@ -124,21 +124,37 @@ render = ->
       ctx.fill-rect xx, yy, 1, 1
       p.s = [] # reset the stack
 
-nums = <[ 0 16 32 64 128 256 512 ? ]>
-vocab = <[ 0 16 64 256 512 ? @ x y + - * swap dup % sr sr di di di max xg xl yl yg sin ]>
+nums = <[ 0 16 32 64 128 256 512 ]>
+pushes = nums.concat <[ ? x x x x y y y y dup @ ]>
+neuts = <[ swap sr sr sin sinh ish ]>
+pops = <[ + - * // % di di di max xg xl yl yg ]>
+vocab = pushes.concat neuts.concat pops 
 
 R = -> ~~(it * Math.random!)
 pick = -> it[R(it.length)]
 
+stack-length = (prog) -> 
+  return prog.reduce (acc, cur) ->
+    if ~(pushes.indexOf cur)
+      return acc + 1
+    if ~(pops.indexOf cur)
+      return Math.max acc - 1, 0
+    return acc
+  , 0
+
 # With image, twitter takes up to 117 characters
 random-prog = (cap) ->
-  prog = ''
-  for ii from 0 til 5 # first seed the stack
-    prog += ' ' + pick nums
-  while prog.length < cap
-    prog += ' ' + pick vocab
+  prog = [pick nums]
+  while prog.join(' ').length < cap
+    if stack-length(prog) < 1
+      prog.push pick pushes
+    else
+      prog.push pick vocab
+  while stack-length(prog) < 3
+    prog.pop
+    prog.unshift pick pushes
   console.log prog
-  return prog
+  return prog.join ' '
 
 layers = ->
   ctx.global-alpha = 1
