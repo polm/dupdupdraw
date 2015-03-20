@@ -158,27 +158,6 @@ random-prog = (cap) ->
   console.log prog
   return prog.join ' '
 
-layers = ->
-  ctx.global-alpha = 1
-  ctx.fill-style = '#fff'
-  ctx.fill-rect 0, 0, canvas.width, canvas.height
-  ctx.global-alpha = 0.2
-  for ii from 0 til 5
-    render random-prog!
-
-sectioned = ->
-  prog = ''
-  for ii from 0 til 10
-    prog += ' ' + pick nums
-  for ii from 0 til 10
-    prog += ' ' + pick vocab
-  prog += '256 x < *'
-  for ii from 0 til 10
-    prog += ' ' + pick vocab
-  prog += '256 x > *'
-  console.log prog
-  return prog
-
 if process.argv.2 and process.argv.2.length > 0
   code = process.argv.2
 else code = random-prog 100
