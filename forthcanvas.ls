@@ -60,19 +60,18 @@ class Parser
   mod: ~> a = @pop!; b = @pop!; @push b % a
   exp: ~> a = @pop!; b = @pop!; @push Math.pow b, a
   swap: ~> a = @pop!; b = @pop!; @push a; @push b
+  over: ~> a = @pop!; b = @pop!; @push a; @push b; @push a
+  rot: ~> a = @pop!; b = @pop!; c = @pop!; @push b; @push a; @push c
   greater: ~> a = @pop!; b = @pop!; @push ~~(b > a)
   less: ~> a = @pop!; b = @pop!; @push ~~(b < a)
   dist: ~> yy = @pop!; xx = @pop!; @push ~~Math.sqrt( ((@x - xx)^2) + ((@y - yy)^2))
   max: ~> @push Math.max(@pop!, @pop!)
-  #xl: ~> if @x < @pop! then \ok else (@pop! and @push 0) # zero if not less than x
-  #xg: ~> if @x > @pop! then \ok else (@pop! and @push 0)
-  #yl: ~> if @y < @pop! then \ok else (@pop! and @push 0)
-  #yg: ~> if @y > @pop! then \ok else (@pop! and @push 0)
   xl: ~> if @x < @pop! then \ok else (@pop!; @push 0) # zero if not less than x
   xg: ~> if @x > @pop! then \ok else (@pop!; @push 0)
   yl: ~> if @y < @pop! then \ok else (@pop!; @push 0)
   yg: ~> if @y > @pop! then \ok else (@pop!; @push 0)
   sin: ~> @push ~~(256 * (Math.sin (@pop! / 256) * (Math.PI / 2)))
+  cos: ~> @push ~~(256 * (Math.cos (@pop! / 256) * (Math.PI / 2)))
   sinh: ~> a = @pop!; @push ( (Math.pow(Math.E, a) - Math.pow(Math.E, -a)) / 2)
   ish: ~> a = @pop! / 256; @push (64 / ( (Math.pow(Math.E, a) - Math.pow(Math.E, -a)) / 2))
   r: ~> @push ~~(255 * Math.random!)
