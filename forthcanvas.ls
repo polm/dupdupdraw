@@ -155,13 +155,14 @@ random-prog = (cap) ->
     cand = prog.pop()
     prog.splice R(prog.length), 0, pick pushes.filter (x) ->
       return x.length <= cand.length
-  console.log prog
   return prog.join ' '
 
 if process.argv.2 and process.argv.2.length > 0
   code = process.argv.2
 else code = random-prog 100
+console.log code
 render code
+
 if process.title !== 'browser'
   write-png canvas, process.argv.3
 else
