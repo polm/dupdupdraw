@@ -45,6 +45,8 @@ A word in parens is an alias. ? and @ are not keywords, but are often used as ra
 - swap - swap the top of the stack with the next value "1 2 swap" -> [2 1]
 - ish - inverse sinh, 64 / sinh(input / 256). Good for curves. Thanks to @itszutak for introducing me to sinh. (sinh is also available but it's a very steep curve)
 - max - remove the two values from the top of the stack and put the higher one back. 
+- rot - put the value two down the stack on top. "1 2 3 rot" -> [2 3 1]
+- over - make a copy of the second value on the stack and push it. "1 2 over" -> [1 2 1]
 
 If you have any questions, feel free to ask me on Twitter. Thanks!
 
