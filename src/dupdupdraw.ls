@@ -1,11 +1,4 @@
-"""
-First take - like a shader, a function is called once for each point. 
-The three values at the top of the stack become r g b.
-
-Builtins: x y t (time) */+- sqrt exp dup drop
-
-"""
-
+Canvas = require \canvas-browserify
 
 is-func = -> \function == typeof it
 is-num  = -> not isNaN it
@@ -102,15 +95,11 @@ class Parser
       else
         @mapping[word] = ~~(255 * Math.random!)
         @push @mapping[word]
-        ##console.log "randomed: #word"
-        #@push ~~(255 * Math.random!) # no errors, just noise
     return @s
 
-Parser = Parser
-Canvas = require \canvas-browserify
-canvas = new Canvas 512, 512
-ctx = canvas.get-context \2d
 render = ->
+  canvas = new Canvas 512, 512
+  ctx = canvas.get-context \2d
   p = new Parser
   width = canvas.width
   height = canvas.height
@@ -122,6 +111,7 @@ render = ->
       ctx.fill-style = "rgb(#r, #g, #b)"
       ctx.fill-rect xx, yy, 1, 1
       p.s = [] # reset the stack
+  return canvas
 
 nums = <[ 0 16 32 64 128 256 512 ]>
 pushes = nums.concat <[ ? x x x x y y y y dup @ ]>
@@ -157,14 +147,34 @@ random-prog = (cap) ->
       return x.length <= cand.length
   return prog.join ' '
 
-if process.argv.2 and process.argv.2.length > 0
-  code = process.argv.2
-else code = random-prog 100
-console.log code
-render code
+main = ->
+  if process.argv.2 and process.argv.2.length > 0
+    code = process.argv.2
+  else code = random-prog 100
+  console.log code
+  canvas = render code
 
-if process.title !== 'browser'
-  write-png canvas, process.argv.3
-else
-  set-timeout ->
-    document.body.append-child canvas
+  if process.title !== 'browser'
+    write-png canvas, process.argv.3
+  else
+    set-timeout ->
+      browser-render canvas, code
+
+browser-render = (canvas, code) ->
+  drawing = document.query-selector(\#drawing)
+  drawing.innerHTML = ''
+  drawing.append-child canvas
+  document.query-selector(\textarea).value = code
+
+browser-render-input = ->
+  code = document.query-selector(\textarea).value
+  console.log value
+  browser-render (render code), code
+
+window = window || null
+if window
+  window.browser-render-input = browser-render-input
+  window.browser-render-random = main
+
+main!
+
