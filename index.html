@@ -1,1 +1,24 @@
-pages/index.html
+<html>
+<title>DupDupDraw Browser Edition</title>
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0}
+body { background: black ; color: white;}
+#drawing { width: 512px; height: 512px;}
+#drawing, #info { float: left; width: 50%;padding: 1em;}
+textarea {width: 100%; margin: 1em 0 0 0;padding: 5px;}
+</style>
+
+<div id="drawing"></div>
+
+<div id="info">
+  Welcome to dupdupdraw's browser edition! You can click the button for a random drawing. Note it can take a while (up to 30s on some old computers or phones) to draw the picture.
+  <br>
+  <textarea ></textarea>
+<button onclick="browserRenderRandom">Random Drawing</button>
+<button onclick="browserRenderInput">Draw from code</button>
+</div>
+
+
+<script src="./dupdupdraw.browser.js"></script>
+</html>
